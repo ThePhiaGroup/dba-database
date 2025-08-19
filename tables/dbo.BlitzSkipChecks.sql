@@ -5,6 +5,7 @@ BEGIN
 		ServerName nvarchar(128) NULL,
 		DatabaseName nvarchar(128) NULL,
 		CheckID int NULL,
+		Description nvarchar(128) NULL,
 		CONSTRAINT PK_BlitzSkipChecks PRIMARY KEY CLUSTERED (ID ASC)
 	) ON [DATA];
 END
