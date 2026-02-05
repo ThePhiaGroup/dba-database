@@ -21,20 +21,20 @@ SET @Command = 'SELECT @Output = COUNT(*) FROM [' + @DatabaseName + '].[' + @Sch
 --EXEC sp_executesql @Command, N'@Output INT OUTPUT', @Output = @RemainingRows OUTPUT
 
 /*
-IF @@SERVERNAME = 'phia22uatsql01'
+IF @@SERVERNAME = 'phia22uatsql02'
     INSERT INTO [dba].[dbo].[PurgeHistory] ([ServerName], [DatabaseName], [TableName], [SchemaName], [PurgedRows], [Operation], [RemainingRows], [PurgeBefore], [PurgeRunTimestamp])
     VALUES (@@SERVERNAME, @DatabaseName, @TableName, @SchemaName, @BatchSize, 'INIT', @RemainingRows, @PurgeBefore, @PurgeRunTimestamp)
 ELSE
-    INSERT INTO [phia22uatsql01_purge].[dba].[dbo].[PurgeHistory] ([ServerName], [DatabaseName], [TableName], [SchemaName], [PurgedRows], [Operation], [RemainingRows], [PurgeBefore], [PurgeRunTimestamp])
+    INSERT INTO [phia22uatsql02_purge].[dba].[dbo].[PurgeHistory] ([ServerName], [DatabaseName], [TableName], [SchemaName], [PurgedRows], [Operation], [RemainingRows], [PurgeBefore], [PurgeRunTimestamp])
     VALUES (@@SERVERNAME, @DatabaseName, @TableName, @SchemaName, @BatchSize, 'INIT', @RemainingRows, @PurgeBefore, @PurgeRunTimestamp)
 */
 WHILE (@BatchSize > 0 AND (@MaxIterations IS NULL OR @Iteration < @MaxIterations))
     BEGIN
-    IF @@SERVERNAME = 'phia22uatsql01'
+    IF @@SERVERNAME = 'phia22uatsql02'
         INSERT INTO [dba].[dbo].[PurgeHistory] ([ServerName], [DatabaseName], [TableName], [SchemaName], [PurgedRows], [Operation], [RemainingRows], [PurgeBefore], [PurgeRunTimestamp])
         VALUES (@@SERVERNAME, @DatabaseName, @TableName, @SchemaName, @BatchSize, 'START', @RemainingRows, @PurgeBefore, @PurgeRunTimestamp)
     ELSE
-        INSERT INTO [phia22uatsql01_purge].[dba].[dbo].[PurgeHistory] ([ServerName], [DatabaseName], [TableName], [SchemaName], [PurgedRows], [Operation], [RemainingRows], [PurgeBefore], [PurgeRunTimestamp])
+        INSERT INTO [phia22uatsql02_purge].[dba].[dbo].[PurgeHistory] ([ServerName], [DatabaseName], [TableName], [SchemaName], [PurgedRows], [Operation], [RemainingRows], [PurgeBefore], [PurgeRunTimestamp])
         VALUES (@@SERVERNAME, @DatabaseName, @TableName, @SchemaName, @BatchSize, 'START', @RemainingRows, @PurgeBefore, @PurgeRunTimestamp)
 
     SET @Command = 'DELETE TOP(' + CAST(@BatchSize AS varchar(1000)) + ') FROM [' + @DatabaseName + '].[' + @SchemaName + '].[' + @TableName + '] WHERE ' + @DateColumn + ' < ''' + CAST(@PurgeBefore AS varchar(1000)) + ''''
@@ -50,11 +50,11 @@ WHILE (@BatchSize > 0 AND (@MaxIterations IS NULL OR @Iteration < @MaxIterations
         RAISERROR (@Message, 0, 1) WITH NOWAIT
         END
 
-    IF @@SERVERNAME = 'phia22uatsql01'
+    IF @@SERVERNAME = 'phia22uatsql02'
         INSERT INTO [dba].[dbo].[PurgeHistory] ([ServerName], [DatabaseName], [TableName], [SchemaName], [PurgedRows], [Operation], [RemainingRows], [PurgeBefore], [PurgeRunTimestamp])
         VALUES (@@SERVERNAME, @DatabaseName, @TableName, @SchemaName, @BatchSize, 'END', @RemainingRows, @PurgeBefore, @PurgeRunTimestamp)
     ELSE
-        INSERT INTO [phia22uatsql01_purge].[dba].[dbo].[PurgeHistory] ([ServerName], [DatabaseName], [TableName], [SchemaName], [PurgedRows], [Operation], [RemainingRows], [PurgeBefore], [PurgeRunTimestamp])
+        INSERT INTO [phia22uatsql02_purge].[dba].[dbo].[PurgeHistory] ([ServerName], [DatabaseName], [TableName], [SchemaName], [PurgedRows], [Operation], [RemainingRows], [PurgeBefore], [PurgeRunTimestamp])
         VALUES (@@SERVERNAME, @DatabaseName, @TableName, @SchemaName, @BatchSize, 'END', @RemainingRows, @PurgeBefore, @PurgeRunTimestamp)
         
     END  
